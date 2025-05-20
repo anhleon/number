@@ -1,0 +1,56 @@
+ 
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lấy số điện thoại qua API</title>
+</head>
+<body>
+  <h1>Lấy số điện thoại</h1>
+  <!-- Nút để gọi API -->
+  <button id="getPhoneBtn">Lấy số điện thoại</button>
+  
+  <!-- Vùng hiển thị số điện thoại -->
+  <p>Số điện thoại: <span id="phoneNumber">Chưa có</span></p>
+  
+  <!-- Nút sao chép -->
+  <button id="copyBtn" style="display:none;">Sao chép số</button>
+  
+  <script>
+    document.getElementById('getPhoneBtn').addEventListener('click', function() {
+      // Link API của bạn
+      const apiUrl = 'https://sms-activation-service.net/stubs/handler_api?api_key=c63cb1b732460e4a7687e82bdb5fc961&action=getNumber&service=oi&operator=any&country=36&lang=ru';
+
+      fetch(apiUrl)
+        .then(response => response.text()) // API này trả về dạng text
+        .then(data => {
+          // Giả sử dữ liệu trả về dạng: "ACCESS_NUMBER:phone_number"
+          const parts = data.split(':');
+          if (parts[0] === 'ACCESS_NUMBER') {
+            const phone = parts[1];
+            document.getElementById('phoneNumber').textContent = phone;
+            // Hiện nút sao chép
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.style.display = 'inline-block';
+
+            // Thiết lập sự kiện sao chép
+            copyBtn.onclick = () => {
+              navigator.clipboard.writeText(phone)
+                .then(() => {
+                  alert('Đã sao chép số điện thoại!');
+                })
+                .catch(() => {
+                  alert('Không thể sao chép, vui lòng thử lại.');
+                });
+            };
+          } else {
+            alert('Không lấy được số điện thoại, phản hồi: ' + data);
+          }
+        })
+        .catch(error => {
+          alert('Lỗi khi gọi API: ' + error);
+        });
+    });
+  </script>
+</body>
+</html>
