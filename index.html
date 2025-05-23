@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Email Generator</title>
+</head>
+<body>
+  <h2>Generator Email theo tên + hậu tố</h2>
+  <label>Họ tên (vd: Anhleon):</label><br>
+  <input type="text" id="name"><br><br>
+
+  <label>Số lượng email muốn tạo:</label><br>
+  <input type="number" id="count" value="10"><br><br>
+
+  <label>Loại hậu tố:</label><br>
+  <select id="suffixType">
+    <option value="0">Không hậu tố</option>
+    <option value="1">1 số ngẫu nhiên</option>
+    <option value="2">2 số ngẫu nhiên</option>
+    <option value="3">3 số ngẫu nhiên</option>
+    <option value="4">4 số ngẫu nhiên</option>
+    <option value="birthyear">Năm sinh</option>
+  </select><br><br>
+
+  <label>Ký tự ngăn cách (vd: ".", "_", "-"):</label><br>
+  <input type="text" id="separator"><br><br>
+
+  <label>Domain cố định:</label><br>
+  <input type="text" id="domain" value="@gmail.com"><br><br>
+
+  <label>
+    <input type="checkbox" id="randomOrderCheckbox">
+    Dùng số thứ tự ngẫu nhiên
+  </label><br><br>
+
+  <button onclick="generateEmails()">Tạo Email</button><br><br>
+
+  <textarea id="result" rows="15" cols="50"></textarea>
+
+  <script>
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateEmails() {
+      var name = document.getElementById("name").value.trim();
+      var count = parseInt(document.getElementById("count").value);
+      var suffixType = document.getElementById("suffixType").value;
+      var separator = document.getElementById("separator").value;
+      var domain = document.getElementById("domain").value.trim();
+      var useRandomOrder = document.getElementById("randomOrderCheckbox").checked;
+
+      var emails = [];
+
+      for (var i = 0; i < count; i++) {
+        var email = name;
+        var suffix = "";
+
+        if (suffixType === "birthyear") {
+          suffix = getRandomInt(1980, 2003);
+        } else if (suffixType !== "0") {
+          var digits = parseInt(suffixType);
+          if (useRandomOrder) {
+            var min = Math.pow(10, digits - 1);
+            var max = Math.pow(10, digits) - 1;
+            suffix = getRandomInt(min, max);
+          } else {
+            for (var j = 0; j < digits; j++) {
+              suffix += getRandomInt(0, 9).toString();
+            }
+          }
+        }
+
+        if (suffix) {
+          email += separator + suffix;
+        }
+
+        email += domain;
+        emails.push(email.toLowerCase());
+      }
+
+      document.getElementById("result").value = emails.join("\n");
+    }
+  </script>
+</body>
+</html>
